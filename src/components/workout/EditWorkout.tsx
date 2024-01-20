@@ -30,6 +30,7 @@ import {
 } from "@/redux/features/workout/workoutApi";
 import { useRouter } from "next/navigation";
 import { object } from "yup";
+import { useGetAllCategoryQuery } from "@/redux/features/category/categoryApi";
 
 type CreateWorkoutProps = {
   id: string;
@@ -52,6 +53,10 @@ const CreateWorkout: React.FC<CreateWorkoutProps> = ({ id }) => {
   const workout: Workout = data?.workout;
   const [updateWorkout, { isLoading, isSuccess, error }] =
     useEditWorkoutMutation();
+
+  const { data: categoryData } = useGetAllCategoryQuery({});
+  const categories = categoryData?.categories;
+
   const router = useRouter();
   const [image, setImage] = useState<any>("");
   const [femaleImage, setFemaleImage] = useState<any>("");
@@ -61,6 +66,7 @@ const CreateWorkout: React.FC<CreateWorkoutProps> = ({ id }) => {
   const [workoutInfo, setWorkoutInfo] = useState({
     name: "",
     location: "",
+    focus_point: "",
     estimate_time: 0,
   });
   const [exerciseList, setExerciseList] = useState<any[]>([]);
@@ -75,6 +81,7 @@ const CreateWorkout: React.FC<CreateWorkoutProps> = ({ id }) => {
         estimate_time: workout.estimate_time,
         location: workout.location,
         name: workout.name,
+        focus_point: workout.focus_point,
       });
       setExerciseList(workout.exercises);
       // const exercises =
@@ -88,6 +95,7 @@ const CreateWorkout: React.FC<CreateWorkoutProps> = ({ id }) => {
     difficult_level: level,
     premium: premium,
     image: image,
+    focus_point: workoutInfo.focus_point,
     exercises: exerciseList.map((exercise) => ({
       exercise_id: exercise.exercise_id,
       time_base: exercise.time_base,
@@ -158,6 +166,9 @@ const CreateWorkout: React.FC<CreateWorkoutProps> = ({ id }) => {
     if (!workoutData.location) {
       fields.push("Location");
     }
+    if (!workoutData.focus_point) {
+      fields.push("Category");
+    }
     if (workoutData.exercises.length === 0) {
       fields.push("Exercise");
     }
@@ -206,7 +217,7 @@ const CreateWorkout: React.FC<CreateWorkoutProps> = ({ id }) => {
         {/* left section */}
 
         <div className="px-12  space-y-6 lg:flex-[0.6]">
-          <div className="flex flex-col items-center w-full gap-4">
+          <div className="flex items-center w-full gap-4">
             <label
               htmlFor="male"
               className=" bg-blue-900/50 w-full h-[150px] rounded-lg flex justify-center items-center gap-4 cursor-pointer hover:bg-zinc-800"
@@ -336,36 +347,14 @@ const CreateWorkout: React.FC<CreateWorkoutProps> = ({ id }) => {
               </div>
             </div>
 
-            <div className="flex sm:flex-row flex-col w-full sm:gap-3 gap-12 ">
-              <div className="">
-                <p className=" text-zinc-300 mb-1">Estimated Time</p>
-                <div className="relative sm:w-[200px]">
-                  <Input
-                    className="sm:w-[200px] absolute"
-                    placeholder="00"
-                    value={workoutInfo.estimate_time}
-                    onChange={(e) => {
-                      if (isNaN(Number(e.target.value))) {
-                        return;
-                      }
-                      setWorkoutInfo((prev) => ({
-                        ...prev,
-                        estimate_time: Number(e.target.value),
-                      }));
-                    }}
-                  />
-                  <span className="absolute right-2  bg-zinc-800 top-[.4rem] p-[1.5px] px-2 rounded-sm">
-                    /min
-                  </span>
-                </div>
-              </div>
-
+            <div className="flex sm:flex-row flex-col w-full gap-3 mb-10 ">
               <div className=" w-full">
                 <p className="text-zinc-300 mb-1">Location</p>
                 <Select
                   onValueChange={(value) =>
                     setWorkoutInfo((prev) => ({ ...prev, location: value }))
                   }
+                  value={workoutInfo.location ?? "Location"}
                 >
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Location" />
@@ -388,6 +377,54 @@ const CreateWorkout: React.FC<CreateWorkoutProps> = ({ id }) => {
                     </SelectItem>
                   </SelectContent>
                 </Select>
+              </div>
+
+              <div className=" w-full">
+                <p className="text-zinc-300 mb-1">Category</p>
+                <Select
+                  onValueChange={(value) =>
+                    setWorkoutInfo((prev) => ({ ...prev, focus_point: value }))
+                  }
+                  value={workoutInfo.focus_point}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {categories?.map((category: any) => (
+                      <SelectItem
+                        key={category?._id}
+                        className="flex items-center gap-2"
+                        value={category?._id}
+                      >
+                        {category?.title?.split("_").join(" ")}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className=" w-full">
+                <p className=" text-zinc-300 mb-1">Estimated Time</p>
+                <div className="relative sm:w-[200px]">
+                  <Input
+                    className="sm:w-[200px] absolute"
+                    placeholder="00"
+                    value={workoutInfo.estimate_time}
+                    onChange={(e) => {
+                      if (isNaN(Number(e.target.value))) {
+                        return;
+                      }
+                      setWorkoutInfo((prev) => ({
+                        ...prev,
+                        estimate_time: Number(e.target.value),
+                      }));
+                    }}
+                  />
+                  <span className="absolute right-2  bg-zinc-800 top-[.4rem] p-[1.5px] px-2 rounded-sm">
+                    /min
+                  </span>
+                </div>
               </div>
             </div>
           </div>

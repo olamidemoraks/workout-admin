@@ -14,7 +14,6 @@ const Challenges = () => {
 
   const challenges: Challenge[] = data?.challenges;
 
-  console.log(challenges);
   return (
     <div className="w-full">
       <div className="mt-4 flex items-center w-full justify-between">

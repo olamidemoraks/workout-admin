@@ -22,7 +22,6 @@ import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Button } from "../ui/button";
 import {
-  useCreateExerciseMutation,
   useEditExerciseMutation,
   useGetExerciseQuery,
 } from "@/redux/features/exercise/exerciseApi";
@@ -34,21 +33,18 @@ type EditExerciseProps = {
 };
 
 const focus = [
-  "chest",
-  "back",
-  "arms",
-  "abdominals",
-  "legs",
-  "shoulders",
-  "calves",
-  "hamstrings",
-  "quadriceps",
-  "glutes",
-  "biceps",
-  "triceps",
-  "forearms",
-  "traps",
-  "lats",
+  { title: "abs", imageUrl: "/assets/groups/abs.png" },
+  { title: "chest", imageUrl: "/assets/groups/chest.png" },
+  { title: "back", imageUrl: "/assets/groups/back.webp" },
+  { title: "traps", imageUrl: "/assets/groups/traps.png" },
+  { title: "shoulders", imageUrl: "/assets/groups/shoulder.webp" },
+  { title: "biceps", imageUrl: "/assets/groups/arms.webp" },
+  { title: "triceps", imageUrl: "/assets/groups/triceps.webp" },
+  { title: "forearms", imageUrl: "/assets/groups/arms.webp" },
+  { title: "calves", imageUrl: "/assets/groups/calves.png " },
+  { title: "hamstrings", imageUrl: "/assets/groups/hamstrings.webp" },
+  { title: "quads", imageUrl: "/assets/groups/quads1.webp" },
+  { title: "glutes", imageUrl: "/assets/groups/glutes.webp" },
 ];
 
 const EditExercise: React.FC<EditExerciseProps> = ({ id }) => {
@@ -122,7 +118,7 @@ const EditExercise: React.FC<EditExerciseProps> = ({ id }) => {
       setMaleImage(exercise.image);
       setFemaleImage(exercise.female_image);
     }
-  }, [exercise]);
+  }, [exercise, setValue]);
 
   const handleSubmitWorkout = (values: any) => {
     const editedData = {
@@ -236,8 +232,12 @@ const EditExercise: React.FC<EditExerciseProps> = ({ id }) => {
                 </SelectTrigger>
                 <SelectContent>
                   {focus.map((item) => (
-                    <SelectItem value={item} key={item} className=" capitalize">
-                      {item}
+                    <SelectItem
+                      value={item.title}
+                      key={item.title}
+                      className=" capitalize"
+                    >
+                      {item.title}
                     </SelectItem>
                   ))}
                 </SelectContent>

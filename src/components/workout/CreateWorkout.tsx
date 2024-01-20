@@ -26,6 +26,7 @@ import {
   useGetAllWorkoutQuery,
 } from "@/redux/features/workout/workoutApi";
 import { useRouter } from "next/navigation";
+import { useGetAllCategoryQuery } from "@/redux/features/category/categoryApi";
 
 type CreateWorkoutProps = {};
 
@@ -43,13 +44,15 @@ const CreateWorkout: React.FC<CreateWorkoutProps> = () => {
   //   {},
   //   { refetchOnMountOrArgChange: true }
   // );
-
+  const { data } = useGetAllCategoryQuery({});
+  const categories: Category[] = data?.categories;
   const [image, setImage] = useState<any>("");
   const [femaleImage, setFemaleImage] = useState<any>("");
   const [level, setLevel] = useState<number>(1);
   const [premium, setPremium] = useState(false);
   const [workoutInfo, setWorkoutInfo] = useState({
     name: "",
+    focus_point: "",
     location: "",
     estimate_time: 0,
   });
@@ -62,6 +65,7 @@ const CreateWorkout: React.FC<CreateWorkoutProps> = () => {
     difficult_level: level,
     premium: premium,
     image: image,
+    focus_point: workoutInfo.focus_point,
     female_image: femaleImage,
     exercises: exerciseList.map((exercise) => ({
       exercise_id: exercise._id,
@@ -126,6 +130,9 @@ const CreateWorkout: React.FC<CreateWorkoutProps> = () => {
     if (!workoutData.location) {
       fields.push("Location");
     }
+    if (!workoutData.focus_point) {
+      fields.push("Category");
+    }
     if (workoutData.exercises.length === 0) {
       fields.push("Exercise");
     }
@@ -167,7 +174,7 @@ const CreateWorkout: React.FC<CreateWorkoutProps> = () => {
         {/* left section */}
 
         <div className="px-12  space-y-6 lg:flex-[0.6]">
-          <div className="flex items-center h-[150px] w-full gap-4">
+          <div className="flex items-center   w-full gap-4">
             <label
               htmlFor="male"
               className=" bg-blue-900/50 w-full h-[150px] rounded-lg flex justify-center items-center gap-4 cursor-pointer hover:bg-zinc-800"
@@ -343,6 +350,29 @@ const CreateWorkout: React.FC<CreateWorkoutProps> = () => {
                     >
                       Anywhere
                     </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className=" w-full">
+                <p className="text-zinc-300 mb-1">Category</p>
+                <Select
+                  onValueChange={(value) =>
+                    setWorkoutInfo((prev) => ({ ...prev, focus_point: value }))
+                  }
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {categories?.map((category: any) => (
+                      <SelectItem
+                        key={category?._id}
+                        className="flex items-center gap-2"
+                        value={category?._id}
+                      >
+                        {category?.title?.split("_").join(" ")}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>

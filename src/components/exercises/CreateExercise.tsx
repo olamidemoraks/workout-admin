@@ -27,25 +27,23 @@ import { Button } from "../ui/button";
 import { useCreateExerciseMutation } from "@/redux/features/exercise/exerciseApi";
 import { useToast } from "../ui/use-toast";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 type CreateExerciseProps = {};
 
 const focus = [
-  "chest",
-  "back",
-  "arms",
-  "abdominals",
-  "legs",
-  "shoulders",
-  "calves",
-  "hamstrings",
-  "quadriceps",
-  "glutes",
-  "biceps",
-  "triceps",
-  "forearms",
-  "traps",
-  "lats",
+  { title: "abs", imageUrl: "/assets/groups/abs.png" },
+  { title: "chest", imageUrl: "/assets/groups/chest.png" },
+  { title: "back", imageUrl: "/assets/groups/back.webp" },
+  { title: "traps", imageUrl: "/assets/groups/traps.png" },
+  { title: "shoulders", imageUrl: "/assets/groups/shoulder.webp" },
+  { title: "biceps", imageUrl: "/assets/groups/arms.webp" },
+  { title: "triceps", imageUrl: "/assets/groups/triceps.webp" },
+  { title: "forearms", imageUrl: "/assets/groups/arms.webp" },
+  { title: "calves", imageUrl: "/assets/groups/calves.png " },
+  { title: "hamstrings", imageUrl: "/assets/groups/hamstrings.webp" },
+  { title: "quads", imageUrl: "/assets/groups/quads1.webp" },
+  { title: "glutes", imageUrl: "/assets/groups/glutes.webp" },
 ];
 
 const CreateExercise: React.FC<CreateExerciseProps> = () => {
@@ -56,6 +54,7 @@ const CreateExercise: React.FC<CreateExerciseProps> = () => {
 
   const [maleImage, setMaleImage] = useState<any>("");
   const [femaleImage, setFemaleImage] = useState<any>("");
+  const [focusPoint, setFocusPoint] = useState<string[]>([]);
   const schema = yup.object({
     name: yup.string(),
     tips: yup.string(),
@@ -80,8 +79,8 @@ const CreateExercise: React.FC<CreateExerciseProps> = () => {
       tips: "",
       equipment: "",
       location: "",
-      focus: "",
-      body_part: "",
+      // focus: "",
+      // body_part: "",
     },
     resolver: yupResolver(schema),
   });
@@ -103,14 +102,24 @@ const CreateExercise: React.FC<CreateExerciseProps> = () => {
         });
       }
     }
-  }, [error, isSuccess, router, toast]);
+  }, [error, isSuccess, reset, router, toast]);
 
-  watch("equipment");
+  const handleSelectMuscle = (group: string) => {
+    setFocusPoint((prev) => {
+      if (prev.includes(group)) {
+        return prev.filter((item) => item !== group);
+      } else {
+        return [...prev, group];
+      }
+    });
+  };
+
   const handleSubmitWorkout = (values: any) => {
     const data = {
       ...values,
       image: maleImage,
       female_image: femaleImage,
+      focus: focusPoint,
     };
     createExercise(data);
   };
@@ -179,32 +188,34 @@ const CreateExercise: React.FC<CreateExerciseProps> = () => {
                   ))}
               </div>
             )}
-            <Input
-              {...register("body_part")}
-              placeholder="Body parts"
-              className={cn(" focus:outline-none ")}
-            />
-            {watch("body_part") && (
-              <div className="flex gap-2 flex-wrap">
-                {watch("body_part")
-                  ?.split(",")
-                  .map((part, index) => (
-                    <>
-                      {part && (
-                        <p
-                          key={index}
-                          className="px-2 py-[2px] text-xs rounded-xl bg-yellow-700 text-white capitalize"
-                        >
-                          {part}
-                        </p>
-                      )}
-                    </>
-                  ))}
-              </div>
-            )}
+            <div className="grid grid-cols-4 gap-2">
+              {focus.map((group, index) => (
+                <div
+                  onClick={() => handleSelectMuscle(group.title)}
+                  className={cn(
+                    "h-[4.5rem] w-[4.5rem] relative flex items-center justify-center cursor-pointer rounded",
+                    {
+                      "ring-2 ring-white/70 ": focusPoint.includes(group.title),
+                    }
+                  )}
+                  key={index}
+                >
+                  <Image
+                    src={`${group.imageUrl}`}
+                    alt={`${group.title}`}
+                    fill
+                    className=" h-full w-full rounded-md absolute brightness-75"
+                  />
+                  <p className={cn(" font-semibold capitalize z-10 absolute ")}>
+                    {group.title}
+                  </p>
+                </div>
+              ))}
+            </div>
+
             {/* If you are finding it hard, place your foot on the floor and perform this on both sides */}
-            <div className=" grid grid-cols-2 space-x-2">
-              <Select onValueChange={(value) => setValue("focus", value)}>
+            <div className=" ">
+              {/* <Select onValueChange={(value) => setValue("focus", value)}>
                 <SelectTrigger
                   className={cn("w-full", {
                     "border-red-500": errors.focus,
@@ -214,12 +225,16 @@ const CreateExercise: React.FC<CreateExerciseProps> = () => {
                 </SelectTrigger>
                 <SelectContent>
                   {focus.map((item) => (
-                    <SelectItem value={item} key={item} className=" capitalize">
-                      {item}
+                    <SelectItem
+                      value={item.title}
+                      key={item.title}
+                      className=" capitalize"
+                    >
+                      {item.title}
                     </SelectItem>
                   ))}
                 </SelectContent>
-              </Select>
+              </Select> */}
 
               <Select onValueChange={(value) => setValue("location", value)}>
                 <SelectTrigger className="w-full">

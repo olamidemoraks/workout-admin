@@ -32,6 +32,7 @@ interface Workout {
   difficult_level: number;
   estimate_time: number;
   location: string;
+  focus_point: string;
 }
 
 interface Challenge {
@@ -45,4 +46,14 @@ interface Challenge {
   };
   location: string;
   challenges: [];
+}
+
+interface Category {
+  _id: string;
+  title: string;
+  image: {
+    public_id: string;
+    url: string;
+  };
+  feature: boolean;
 }

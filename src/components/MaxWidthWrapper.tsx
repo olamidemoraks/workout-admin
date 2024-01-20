@@ -92,7 +92,7 @@ const MaxWidthWrapper = ({ children }: PropsWithChildren) => {
 
             <TabsTrigger
               value="category"
-              onClick={() => handleNavigate("challenges")}
+              onClick={() => handleNavigate("category")}
             >
               <Group size={20} className="mr-2" />{" "}
               <span className=" sm:inline-block hidden">Category</span>

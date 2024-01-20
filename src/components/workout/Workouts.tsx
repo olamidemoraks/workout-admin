@@ -19,7 +19,7 @@ const Workouts = () => {
         </Link>
       </div>
       <div className="mt-8">
-        <div className=" grid xl:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-x-5 gap-y-5">
+        <div className=" grid xl:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-x-5 gap-y-5">
           {workouts?.map((workout) => (
             <Link href={`/workouts/edit/${workout._id}`} key={workout._id}>
               <WorkoutCard workout={workout} />
