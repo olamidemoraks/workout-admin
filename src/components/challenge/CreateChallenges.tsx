@@ -2,7 +2,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import LeftChallengeSection from "./AddChallengeSection";
-import RightChallengeSection from "./RightChallengeSection";
 import { Crown, Loader2, LucideImage } from "lucide-react";
 import { Input } from "../ui/input";
 import { cn } from "@/lib/utils";
@@ -224,7 +223,7 @@ const CreateChallenges = ({ id }: CreateChallenges) => {
   };
 
   return (
-    <div className="my-8 mx-auto lg:w-[80%] md:w-[90%] w-[95%]">
+    <div className="my-8 mx-auto lg:w-[95%] md:w-[95%] w-[95%]">
       <div className="mb-4 w-full flex justify-end gap-3">
         <Button onClick={handleSaveChallenge}>
           {id ? "Update" : "Create"} Challenges{" "}

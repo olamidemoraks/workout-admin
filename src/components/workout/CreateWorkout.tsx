@@ -192,7 +192,7 @@ const CreateWorkout: React.FC<CreateWorkoutProps> = () => {
                 </>
               )}
             </label>
-            <label
+            {/* <label
               htmlFor="female"
               className=" bg-pink-900/50  w-full h-[150px] rounded-lg flex justify-center items-center gap-4 cursor-pointer hover:bg-zinc-800"
             >
@@ -208,7 +208,7 @@ const CreateWorkout: React.FC<CreateWorkoutProps> = () => {
                   <p>Add Female image</p>
                 </>
               )}
-            </label>
+            </label> */}
           </div>
           <input
             type="file"
@@ -216,12 +216,12 @@ const CreateWorkout: React.FC<CreateWorkoutProps> = () => {
             id="male"
             onChange={(e) => handleFileChange(e, "male")}
           />
-          <input
+          {/* <input
             type="file"
             hidden
             id="female"
             onChange={(e) => handleFileChange(e, "female")}
-          />
+          /> */}
           <div className=" space-y-6 mt-3">
             <div>
               <p className=" text-zinc-300 mb-1">Workout Title</p>

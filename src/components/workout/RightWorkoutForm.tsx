@@ -233,7 +233,6 @@ const RightWorkoutForm: React.FC<RightWorkoutFormProps> = ({
                   key={exercise._id}
                 >
                   <ExerciseCard exercise={exercise} select />
-                  <Plus className="pr-2" />
                 </div>
               ))}
             </div>

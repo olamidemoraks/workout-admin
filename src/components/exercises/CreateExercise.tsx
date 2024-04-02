@@ -24,12 +24,19 @@ import { useForm, ResolverOptions } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Button } from "../ui/button";
-import { useCreateExerciseMutation } from "@/redux/features/exercise/exerciseApi";
+import {
+  useCreateExerciseMutation,
+  useEditExerciseMutation,
+  useGetExerciseQuery,
+} from "@/redux/features/exercise/exerciseApi";
 import { useToast } from "../ui/use-toast";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import usePopulateExercise from "@/hooks/populateExercise";
 
-type CreateExerciseProps = {};
+type CreateExerciseProps = {
+  id: string;
+};
 
 const focus = [
   { title: "abs", imageUrl: "/assets/groups/abs.png" },
@@ -46,9 +53,22 @@ const focus = [
   { title: "glutes", imageUrl: "/assets/groups/glutes.webp" },
 ];
 
-const CreateExercise: React.FC<CreateExerciseProps> = () => {
+const CreateExercise: React.FC<CreateExerciseProps> = ({ id }) => {
+  // creating execise api
   const [createExercise, { isLoading, isSuccess, error }] =
     useCreateExerciseMutation({});
+  // editing api
+  const [
+    editExercise,
+    { isLoading: isEditing, isSuccess: isEdited, error: editError },
+  ] = useEditExerciseMutation({});
+  // getting execise api
+  const { data, refetch } = useGetExerciseQuery(
+    { id },
+    { refetchOnMountOrArgChange: true }
+  );
+
+  const exercise: Exercise = data?.exercise;
   const router = useRouter();
   const { toast } = useToast();
 
@@ -78,19 +98,26 @@ const CreateExercise: React.FC<CreateExerciseProps> = () => {
       name: "",
       tips: "",
       equipment: "",
-      location: "",
+      location: "home",
       // focus: "",
       // body_part: "",
     },
     resolver: yupResolver(schema),
   });
 
+  usePopulateExercise({ exercise, setMaleImage, setValue, setFocusPoint });
+
   useEffect(() => {
+    // creating exercise changes
     if (isSuccess) {
-      // router.push("/exercises");
+      toast({
+        variant: "default",
+        description: "Save Successfull",
+      });
       reset();
       setMaleImage("");
       setFemaleImage("");
+      setFocusPoint([]);
     }
     if (error) {
       if ("data" in error) {
@@ -102,7 +129,26 @@ const CreateExercise: React.FC<CreateExerciseProps> = () => {
         });
       }
     }
-  }, [error, isSuccess, reset, router, toast]);
+
+    // editing exerciese changes
+    if (isEdited) {
+      toast({
+        variant: "default",
+        description: "Edit Successfull",
+      });
+      refetch();
+    }
+    if (editError) {
+      if ("data" in editError) {
+        const errorData = editError as any;
+        toast({
+          variant: "destructive",
+          title: "Something went wrong",
+          description: errorData.data.message,
+        });
+      }
+    }
+  }, [editError, error, isEdited, isSuccess, refetch, reset, router, toast]);
 
   const handleSelectMuscle = (group: string) => {
     setFocusPoint((prev) => {
@@ -115,13 +161,24 @@ const CreateExercise: React.FC<CreateExerciseProps> = () => {
   };
 
   const handleSubmitWorkout = (values: any) => {
+    if (!values?.name || focusPoint?.length === 0 || !maleImage) {
+      return toast({
+        variant: "destructive",
+        title: "Please enter all relavant info",
+      });
+    }
     const data = {
       ...values,
       image: maleImage,
       female_image: femaleImage,
       focus: focusPoint,
     };
-    createExercise(data);
+
+    if (id) {
+      editExercise({ value: data, id });
+    } else {
+      createExercise(data);
+    }
   };
 
   const handleFileChange = (
@@ -156,7 +213,7 @@ const CreateExercise: React.FC<CreateExerciseProps> = () => {
               })}
             />
             <Textarea
-              {...register("tips", { required: true })}
+              {...register("tips")}
               placeholder="Exercise Tips"
               className={cn("focus:outline-none resize-none", {
                 "border-red-500": errors.tips,
@@ -215,28 +272,10 @@ const CreateExercise: React.FC<CreateExerciseProps> = () => {
 
             {/* If you are finding it hard, place your foot on the floor and perform this on both sides */}
             <div className=" ">
-              {/* <Select onValueChange={(value) => setValue("focus", value)}>
-                <SelectTrigger
-                  className={cn("w-full", {
-                    "border-red-500": errors.focus,
-                  })}
-                >
-                  <SelectValue placeholder="Focus Point" />
-                </SelectTrigger>
-                <SelectContent>
-                  {focus.map((item) => (
-                    <SelectItem
-                      value={item.title}
-                      key={item.title}
-                      className=" capitalize"
-                    >
-                      {item.title}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select> */}
-
-              <Select onValueChange={(value) => setValue("location", value)}>
+              <Select
+                onValueChange={(value) => setValue("location", value)}
+                defaultValue={watch("location")}
+              >
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Location" />
                 </SelectTrigger>
@@ -251,19 +290,18 @@ const CreateExercise: React.FC<CreateExerciseProps> = () => {
               </Select>
             </div>
             <Button
-              onClick={handleSubmit(handleSubmitWorkout)}
-              disabled={femaleImage && maleImage ? false : true}
+              type="submit"
+              disabled={isLoading || isEditing}
               className=" disabled:cursor-not-allowed"
             >
-              {!isLoading ? (
+              {!isLoading || !isEditing ? (
                 <>
-                  {" "}
-                  Submit Exercise <ArrowRight size={17} className="ml-2" />
+                  {id ? "Edit" : "Save"} Exercise{" "}
+                  <ArrowRight size={17} className="ml-2" />
                 </>
               ) : (
                 <>
-                  Submitting...{" "}
-                  <Loader2Icon className=" animate-spin" size={17} />
+                  Saving... <Loader2Icon className=" animate-spin" size={17} />
                 </>
               )}
             </Button>
@@ -273,7 +311,7 @@ const CreateExercise: React.FC<CreateExerciseProps> = () => {
               {!maleImage ? (
                 <label
                   htmlFor="male"
-                  className="flex items-center justify-center flex-col gap-3 h-full w-full cursor-pointer hover:bg-zinc-800   bg-blue-900/50 rounded-xl "
+                  className="flex items-center justify-center flex-col gap-3 h-full w-full cursor-pointer bg-zinc-800   hover:bg-blue-900/50 rounded-xl "
                 >
                   <UploadCloud className="" size={30} />
                   <p className=" text-zinc-200 text-lg">Male Preview</p>
@@ -282,7 +320,9 @@ const CreateExercise: React.FC<CreateExerciseProps> = () => {
               ) : (
                 <div className=" w-full h-full relative">
                   <img
-                    src={maleImage}
+                    src={
+                      typeof maleImage === "object" ? maleImage.url : maleImage
+                    }
                     className=" w-full h-full rounded-xl object-cover"
                     alt="Preview workout image"
                   />
@@ -295,7 +335,7 @@ const CreateExercise: React.FC<CreateExerciseProps> = () => {
                 </div>
               )}
 
-              {!femaleImage ? (
+              {/* {!femaleImage ? (
                 <label
                   htmlFor="female"
                   className="flex items-center justify-center flex-col gap-3 h-full w-full cursor-pointer hover:bg-zinc-800  bg-pink-900/50 rounded-xl "
@@ -318,7 +358,7 @@ const CreateExercise: React.FC<CreateExerciseProps> = () => {
                     <SwitchCameraIcon />
                   </label>
                 </div>
-              )}
+              )} */}
             </>
 
             <input
@@ -328,13 +368,13 @@ const CreateExercise: React.FC<CreateExerciseProps> = () => {
               id="male"
               onChange={(e) => handleFileChange(e, "male")}
             />
-            <input
+            {/* <input
               accept="image/*"
               type="file"
               className=" hidden"
               id="female"
               onChange={(e) => handleFileChange(e, "female")}
-            />
+            /> */}
           </div>
         </div>
       </form>

@@ -1,5 +1,6 @@
 import Header from "@/components/Header";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
+import CreateExercise from "@/components/exercises/CreateExercise";
 import EditExercise from "@/components/exercises/EditExercise";
 import Protected from "@/hooks/protected";
 import React from "react";
@@ -18,7 +19,7 @@ const page: React.FC<pageProps> = ({ params }) => {
       <Protected>
         <Header />
         <MaxWidthWrapper>
-          <EditExercise id={id} />
+          <CreateExercise id={id} />
         </MaxWidthWrapper>
       </Protected>
     </>

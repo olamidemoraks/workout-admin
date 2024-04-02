@@ -111,7 +111,7 @@ const EditExercise: React.FC<EditExerciseProps> = ({ id }) => {
     if (exercise) {
       setValue("name", exercise.name);
       setValue("body_part", exercise.body_part);
-      setValue("focus", exercise.focus);
+      // setValue("focus", exercise.focus);
       setValue("equipment", exercise.equipment);
       setValue("location", exercise.location);
       setValue("tips", exercise.tips);
@@ -307,7 +307,7 @@ const EditExercise: React.FC<EditExerciseProps> = ({ id }) => {
                 </div>
               )}
 
-              {!femaleImage ? (
+              {/* {!femaleImage ? (
                 <label
                   htmlFor="female"
                   className="flex items-center justify-center flex-col gap-3 h-full w-full cursor-pointer hover:bg-zinc-800  bg-pink-900/50 rounded-xl "
@@ -334,7 +334,7 @@ const EditExercise: React.FC<EditExerciseProps> = ({ id }) => {
                     <SwitchCameraIcon />
                   </label>
                 </div>
-              )}
+              )} */}
             </>
 
             <input
@@ -344,13 +344,13 @@ const EditExercise: React.FC<EditExerciseProps> = ({ id }) => {
               id="male"
               onChange={(e) => handleFileChange(e, "male")}
             />
-            <input
+            {/* <input
               accept="image/*"
               type="file"
               className=" hidden"
               id="female"
               onChange={(e) => handleFileChange(e, "female")}
-            />
+            /> */}
           </div>
         </div>
       </form>

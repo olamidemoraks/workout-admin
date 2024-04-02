@@ -3,7 +3,7 @@ interface Exercise {
   name: string;
   tips: string;
   body_part: string;
-  focus: string;
+  focus: string[];
   equipment: string;
   location: string;
   image: {
