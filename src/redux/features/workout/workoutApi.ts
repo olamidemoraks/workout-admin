@@ -20,7 +20,7 @@ export const workoutApi = apiSlice.injectEndpoints({
     }),
     getAllWorkout: builder.query({
       query: () => ({
-        url: "get-all-workouts",
+        url: "category-workouts",
         method: "GET",
         credentials: "include" as const,
       }),

@@ -76,13 +76,13 @@ const RightWorkoutForm: React.FC<RightWorkoutFormProps> = ({
 
   const filteredExercise = useMemo(() => {
     if (searchExercise === "") return exercises;
-    return exercises.filter(
+    return exercises?.filter(
       (exercise) =>
-        exercise.name.toLowerCase().includes(searchExercise.toLowerCase()) ||
-        exercise.body_part
-          .toLowerCase()
+        exercise?.name?.toLowerCase().includes(searchExercise.toLowerCase()) ||
+        exercise?.body_part
+          ?.toLowerCase()
           .includes(searchExercise.toLowerCase()) ||
-        exercise.focus.toLowerCase().includes(searchExercise.toLowerCase())
+        exercise?.focus?.includes(searchExercise.toLowerCase())
     );
   }, [exercises, searchExercise]);
 

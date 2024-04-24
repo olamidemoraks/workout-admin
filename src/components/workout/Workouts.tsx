@@ -4,28 +4,28 @@ import Link from "next/link";
 import React from "react";
 import { buttonVariants } from "../ui/button";
 import { useGetAllWorkoutQuery } from "@/redux/features/workout/workoutApi";
-import WorkoutCard from "./WorkoutCard";
+import WorkoutSection from "./WorkoutSection";
 
 const Workouts = () => {
   const { data, isLoading } = useGetAllWorkoutQuery({});
 
-  const workouts: Workout[] = data?.workouts;
+  const workouts: Array<{ [key: string]: Array<any> }> = data?.workout;
   return (
     <div className="w-full">
       <div className="mt-4 flex items-center w-full justify-between">
-        <p className=" text-2xl">{workouts?.length} Workout</p>
+        <p className=" text-2xl">Workout</p>
         <Link className={buttonVariants({})} href={"/workouts/create"}>
           Create Workout <Plus size={16} className=" inline-block ml-2" />
         </Link>
       </div>
-      <div className="mt-8">
-        <div className=" grid xl:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-x-5 gap-y-5">
-          {workouts?.map((workout) => (
-            <Link href={`/workouts/edit/${workout._id}`} key={workout._id}>
-              <WorkoutCard workout={workout} />
-            </Link>
-          ))}
-        </div>
+      <div className="  mt-10 flex flex-col gap-10">
+        {workouts?.map((categoryWorkout, idx) => (
+          <WorkoutSection
+            key={idx}
+            header={Object.keys(categoryWorkout)?.[0]}
+            workouts={Object.values(categoryWorkout)?.[0]}
+          />
+        ))}
       </div>
     </div>
   );
